@@ -8,8 +8,10 @@ authors = ["Max Schulte <maximilliangschulte@pm.me>"]
 python = "^3.9"
 plotille = "^4.0.2"
 numpy = "^1.23.1"
+typed-argument-parser = "^1.7.2"
 
 [tool.poetry.dev-dependencies]
+black = "^22.6.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

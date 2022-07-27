@@ -12,7 +12,8 @@
     pkgs.mkShell {
       shellHook = "poetry shell";
       nativeBuildInputs = with pkgs.buildPackages; [ 
-	python38
+	python39
+	python39Packages.numpy
 	poetry
       ];
     }

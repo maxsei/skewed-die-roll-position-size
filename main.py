@@ -1,76 +1,61 @@
 #!/usr/bin/env python3
-import plotille
-import numpy as np
 from collections import OrderedDict
-from pprint import pformat
 from copy import deepcopy
-from typing import Optional
+
+import numpy as np
+import plotille
+import toml
+
 from scipy.stats.mstats import gmean
 
-from tap import Tap
-
-class Args(Tap):
-    # Params
-    n_plays: int = 666 # number of times to bet
-    win_rate: float = 5 / 6 # win rate
-    loss_rate: float = 1 - win_rate # loss rate. implicit (1 - win_rate)
-    win_amt: float = 1 # amount for a win
-    loss_amt: float = -4 # amount for a loss
-    starting_resources: float = 1 # initial position
-    n_positions: int = 200 # number of position sizes to compute in the range of [0, (1-win_rate))
-    n_sims: int = 1 # number of simulations to smooth the distribution
-    seed: Optional[int] = None # optionally seed
-    # Plot
-    height: int = 30 # terminal plot width
-    width: int = 80 # terminal plot width
-    log_scale: Optional[bool] = False # show chart in log scale
-    # Meta
-    echo: Optional[bool] = True # print configuration
-
-    def __str__(self):
-        d = {}
-        for k in type(self).__annotations__.keys():
-            d[k] = getattr(self, k)
-        return pformat(d, sort_dicts=False)
+from args import Args
 
 
 def main():
-    args = Args().parse_args()
+    args = Args(underscores_to_dashes=True).parse_args()
+
+    # Load args if necessary.
+    if args.load_from is not None:
+        args.load(args.load_from)
+
     # Assign a random seed.
-    if args.seed:
-        args.seed = np.random.randint(np.iinfo(np.int64).max)
+    if args.seed is None and args.load_from is not None:
+        args.seed = np.random.randint(np.iinfo(np.int32).max - 1)
 
-    # Print configuration if echo
-    if args.echo:
-        print(args)
-        print()
+    # Save args if necessary.
+    if args.save_to is not None:
+        args.save(args.save_to)
 
+    # Print out args.
+    print(" params ".center(args.width, "-"))
+    print(args, end="\n\n")
+
+    # Seed and generate (sims, plays).
     np.random.seed(args.seed)
-
-    position_sizes = np.linspace(0, 1 - args.win_rate, args.n_positions)
-
-    rand = np.random.rand(args.n_sims, args.n_plays)
+    rand = np.random.rand(args.sims, args.trials)
     wins = (rand < args.win_rate).astype(np.int64)
     losses = ((1 - rand) < args.loss_rate).astype(np.int64)
 
+    # Create position size strategies.
+    position_sizes = np.linspace(0, 1 - args.win_rate, args.positions)
+
     # [Position sizes, simulation, plays]
     outcomes = (
-        args.starting_resources
+        args.size
         + position_sizes[..., np.newaxis, np.newaxis]
         * ((wins * args.win_amt) + (losses * args.loss_amt))
     )
     profit = gmean(np.prod(outcomes, axis=-1), axis=-1)
     # profit = np.mean(np.prod(outcomes, axis=-1), axis=-1)
 
-
-
     fig = plotille.Figure()
     fig.height = args.height
     fig.width = args.width
     # fig.set_x_limits(min_=0, max_=position_sizes[-1])
     fig.set_x_limits(min_=0, max_=1)
-    fig.scatter(position_sizes, np.log(profit) if args.log_scale else profit)
-    print(fig.show())
+    fig.scatter(position_sizes, np.log(profit) if args.log else profit)
+    fig_str = fig.show()
+    print(fig_str)
 
 if __name__ == "__main__":
     main()

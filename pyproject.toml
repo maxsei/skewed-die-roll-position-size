@@ -5,10 +5,11 @@ description = "experiment to find optimal position size for betting on a skewed 
 authors = ["Max Schulte <maximilliangschulte@pm.me>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.9,<3.11"
 plotille = "^4.0.2"
 numpy = "^1.23.1"
 typed-argument-parser = "^1.7.2"
+scipy = "^1.8.1"
 
 [tool.poetry.dev-dependencies]
 black = "^22.6.0"

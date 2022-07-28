@@ -14,6 +14,7 @@
       nativeBuildInputs = with pkgs.buildPackages; [ 
 	python39
 	python39Packages.numpy
+	python39Packages.scipy
 	poetry
       ];
     }

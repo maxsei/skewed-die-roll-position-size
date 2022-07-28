@@ -5,12 +5,7 @@ from typing import Optional
 
 class TapBase(Tap):
     def __str__(self):
-        return "\n".join(
-            [
-                type(self).__doc__,
-                pformat(self.as_dict(), sort_dicts=False),
-            ]
-        )
+        return pformat(self.as_dict(), sort_dicts=False)
 
     def as_dict(self):
         mro_all = type(self).__mro__

@@ -19,7 +19,7 @@ def main():
         args.load(args.load_from)
 
     # Assign a random seed.
-    if args.seed is None and args.load_from is not None:
+    if args.seed is None and args.load_from is None:
         args.seed = np.random.randint(np.iinfo(np.int32).max - 1)
 
     # Save args if necessary.
@@ -27,8 +27,9 @@ def main():
         args.save(args.save_to)
 
     # Print out args.
-    print(" params ".center(args.width, "-"))
-    print(args, end="\n\n")
+    if not args.hide_params:
+        print(" params ".center(args.width, "-"))
+        print(args, end="\n\n")
 
     # Seed and generate (sims, plays).
     np.random.seed(args.seed)
@@ -54,7 +55,7 @@ def main():
         max_=args.xmax if args.xmax is not None else args.position_max,
     )
     # fig.set_x_limits(min_=0, max_=1)
-    fig.scatter(position_sizes, np.log(profit) if args.log else profit)
+    fig.scatter(position_sizes, np.log(profit) if args.log else profit, lc="green")
     fig_str = fig.show()
     print(fig_str)
 

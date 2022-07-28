@@ -25,6 +25,7 @@ class ArgsPlot(TapBase):
 class ArgsMeta(TapBase):
     save_to: Optional[str] = None  # optional json path to save to
     load_from: Optional[str] = None  # optional json path to load from
+    # hide_params: bool = False  # hide params
 
     def process_args(self):
         if self.save_to != None and self.load_from != None:
@@ -40,7 +41,7 @@ class ArgsParams(TapBase):
     size: float = 1  # initial position size
     position_min: int = 0  # start of position size range
     position_max: int = loss_rate  # end of position size range (default=loss_rate)
-    positions: int = 2  # number of position sizes to compute
+    positions: int = 32  # number of position sizes to compute
     sims: int = 1  # number of simulations to smooth the distribution
     seed: Optional[int] = None  # optionally seed
 

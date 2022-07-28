@@ -37,13 +37,11 @@ def main():
     losses = ((1 - rand) < args.loss_rate).astype(np.int64)
 
     # Create position size strategies.
-    position_sizes = np.linspace(0, 1 - args.win_rate, args.positions)
+    position_sizes = np.linspace(args.position_min, args.position_max, args.positions)
 
     # [Position sizes, simulation, plays]
-    outcomes = (
-        args.size
-        + position_sizes[..., np.newaxis, np.newaxis]
-        * ((wins * args.win_amt) + (losses * args.loss_amt))
+    outcomes = args.size + position_sizes[..., np.newaxis, np.newaxis] * (
+        (wins * args.win_amt) + (losses * args.loss_amt)
     )
     profit = gmean(np.prod(outcomes, axis=-1), axis=-1)
     # profit = np.mean(np.prod(outcomes, axis=-1), axis=-1)
@@ -51,11 +49,15 @@ def main():
     fig = plotille.Figure()
     fig.height = args.height
     fig.width = args.width
-    # fig.set_x_limits(min_=0, max_=position_sizes[-1])
-    fig.set_x_limits(min_=0, max_=1)
+    fig.set_x_limits(
+        min_=args.xmin if args.xmin is not None else args.position_min,
+        max_=args.xmax if args.xmax is not None else args.position_max,
+    )
+    # fig.set_x_limits(min_=0, max_=1)
     fig.scatter(position_sizes, np.log(profit) if args.log else profit)
     fig_str = fig.show()
     print(fig_str)
+
 
 if __name__ == "__main__":
     main()

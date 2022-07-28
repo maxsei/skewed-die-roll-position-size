@@ -25,7 +25,7 @@ class ArgsPlot(TapBase):
 class ArgsMeta(TapBase):
     save_to: Optional[str] = None  # optional json path to save to
     load_from: Optional[str] = None  # optional json path to load from
-    # hide_params: bool = False  # hide params
+    hide_params: bool = False  # hide params
 
     def process_args(self):
         if self.save_to != None and self.load_from != None:
